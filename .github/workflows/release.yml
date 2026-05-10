@@ -19,7 +19,7 @@ jobs:
                       binary_path: build/incrify
 
                     - os: windows-latest
-                      artifact_name: incrify-windows-x64
+                      artifact_name: incrify-windows-x64.exe
                       binary_path: build/Release/incrify.exe
 
         steps:
