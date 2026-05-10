@@ -157,6 +157,28 @@ Result BackupManager::restore(const std::string& snapshotId, const std::string& 
             storage.restoreFiles(snapshotPath, filesToRestore, dst);
         }
 
+        std::vector<fs::path> dirs;
+
+        for(const auto& entry : fs::recursive_directory_iterator(dst)){
+            if(entry.is_directory()){
+                dirs.push_back(entry.path());
+                continue;
+            }
+            if(!entry.is_regular_file()) continue;
+
+            std::string relativePath = fs::relative(entry.path(), dst).string();
+            if(!target.index.hasFile(relativePath)){
+                fs::remove(entry.path());
+            }
+        }
+
+        std::sort(dirs.rbegin(), dirs.rend());
+        for(const auto& dir : dirs){
+            if(fs::is_empty(dir)){
+                fs::remove(dir);
+            }
+        }
+
         return {true, "Восстановление завершено из снапшота: " + snapshotId};
     } catch (const std::exception& e) {
         return {false, std::string("Ошибка: ") + e.what()};

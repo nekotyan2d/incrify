@@ -136,7 +136,10 @@ void StorageEngine::copyFiles(const std::string& srcPath, const std::vector<File
         fs::path dst = filesDir / change.path;
  
         fs::create_directories(dst.parent_path());
-        fs::copy_file(src, dst, fs::copy_options::overwrite_existing);
+        if(fs::exists(dst)){
+            fs::remove(dst);
+        }
+        fs::copy_file(src, dst);
     }
 }
  
@@ -150,7 +153,10 @@ void StorageEngine::restoreFiles(const std::string& snapshotPath, const std::vec
         if (!fs::exists(src)) continue;
  
         fs::create_directories(dst.parent_path());
-        fs::copy_file(src, dst, fs::copy_options::overwrite_existing);
+        if(fs::exists(dst)){
+            fs::remove(dst);
+        }
+        fs::copy_file(src, dst);
     }
 }
  
