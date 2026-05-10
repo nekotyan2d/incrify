@@ -28,7 +28,7 @@ class BackupManager {
         Result createIncremental(const std::string& src, const std::string& dst);
 
         Result restore(const std::string& snapshotId, const std::string& backupDir);
-        Result deleteSnapshot(const std::string& snapshotId, const std::string& backupDir);
+        Result deleteSnapshot(const std::string& snapshotId, const std::string& backupDir, bool force = false);
         std::vector<Snapshot> listSnapshots(const std::string& backupDir);
 
     private:

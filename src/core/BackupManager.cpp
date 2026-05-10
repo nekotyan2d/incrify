@@ -185,10 +185,45 @@ Result BackupManager::restore(const std::string& snapshotId, const std::string& 
     }
 }
 
-Result BackupManager::deleteSnapshot(const std::string& snapshotId, const std::string& backupDir) {
+Result BackupManager::deleteSnapshot(const std::string& snapshotId, const std::string& backupDir, bool force) {
     try {
-        StorageEngine::getInstance().deleteSnapshot(snapshotId, fs::absolute(backupDir).string());
-        return {true, "Снапшот удалён: " + snapshotId};
+        std::string absDir = fs::absolute(backupDir).string();
+        auto snapshots = StorageEngine::getInstance().listSnapshots(absDir);
+
+        std::vector<std::string> children;
+        for(const auto& s : snapshots){
+            if(s.parentId == snapshotId){
+                children.push_back(s.id);
+            }
+        }
+
+        if(!children.empty() && !force){
+            std::string msg = "Нельзя удалить снапшот: от него зависит " + children[0] + ". Используйте -f для принудительного удаления.";
+            return {false, msg};
+        }
+        
+        std::vector<std::string> toDelete = {snapshotId};
+
+        if(force){
+            bool found = true;
+            while(found){
+                found = false;
+                for(const auto& s : snapshots){
+                    bool parentInList = std::find(toDelete.begin(), toDelete.end(), s.parentId) != toDelete.end();
+                    bool notYetMoved = std::find(toDelete.begin(), toDelete.end(), s.id) == toDelete.end();
+                    if(parentInList && notYetMoved){
+                        toDelete.push_back(s.id);
+                        found = true;
+                    }
+                }
+            }
+        }
+
+        for(const auto& id : toDelete){
+            StorageEngine::getInstance().deleteSnapshot(id, absDir);
+        }
+
+        return {true, "Удалено снапшотов: " + std::to_string(toDelete.size())};
     } catch (const std::exception& e) {
         return {false, std::string("Ошибка: ") + e.what()};
     }

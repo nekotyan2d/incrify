@@ -83,12 +83,13 @@ public:
 class DeleteCommand : public ICommand {
     BackupManager& _manager;
     std::string _snapshotId, _backupDir;
+    bool _force;
 public:
-    DeleteCommand(BackupManager& m, std::string id, std::string dir)
-        : _manager(m), _snapshotId(std::move(id)), _backupDir(std::move(dir)) {}
+    DeleteCommand(BackupManager& m, std::string id, std::string dir, bool force)
+        : _manager(m), _snapshotId(std::move(id)), _backupDir(std::move(dir)), _force(force) {}
 
     void execute() override {
-        auto result = _manager.deleteSnapshot(_snapshotId, _backupDir);
+        auto result = _manager.deleteSnapshot(_snapshotId, _backupDir, _force);
         std::cout << (result.success ? "[OK] " : "[ОШИБКА] ") << result.message << "\n";
     }
 };
@@ -125,9 +126,10 @@ std::unique_ptr<ICommand> CLI::parseCommand(const std::vector<std::string>& args
     if (command == "restore" && args.size() >= 3)
         return std::make_unique<RestoreCommand>(_manager, args[1], args[2]);
 
-    if (command == "delete" && args.size() >= 3)
-        return std::make_unique<DeleteCommand>(_manager, args[1], args[2]);
-
+    if (command == "delete" && args.size() >= 3){
+        bool force = args.size() >= 4 && args[3] == "-f";
+        return std::make_unique<DeleteCommand>(_manager, args[1], args[2], force);
+    }
     printUsage();
     return nullptr;
 }
@@ -138,7 +140,7 @@ void CLI::printUsage() const {
               << "  incrify incremental <src> <dst>         - Инкрементальный бэкап\n"
               << "  incrify list <backup_dir>               - Список снапшотов\n"
               << "  incrify restore <snapshot_id> <dir>     - Восстановление\n"
-              << "  incrify delete <snapshot_id> <dir>      - Удалить снапшот\n\n"
+              << "  incrify delete <snapshot_id> <dir> [-f] - Удалить снапшот (-f для удаления зависимых)\n\n"
               << "Пример:\n"
               << "  incrify full ./my_docs ./my_backup\n"
               << "  incrify incremental ./my_docs ./my_backup\n"
