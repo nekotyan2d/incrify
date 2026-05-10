@@ -2,9 +2,16 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <filesystem>
+#include <chrono>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
+#include <stdexcept>
 #include "FileIndexer.h"
 #include "IProgressObserver.h"
 #include "StorageEngine.h"
+
 
 struct Result {
     bool success;

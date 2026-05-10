@@ -3,6 +3,10 @@
 #include <vector>
 #include "models/Snapshot.h"
 #include "models/FileChange.h"
+#include <filesystem>
+#include <fstream>
+#include <stdexcept>
+#include <nlohmann/json.hpp>
 
 class StorageEngine {
     public:

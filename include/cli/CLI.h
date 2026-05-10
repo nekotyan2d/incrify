@@ -4,6 +4,9 @@
 #include <memory>
 #include "core/BackupManager.h"
 #include "ICommand.h"
+#include "core/IProgressObserver.h"
+#include <iostream>
+#include <iomanip>
 
 class CLI {
     public:

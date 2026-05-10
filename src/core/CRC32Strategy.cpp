@@ -1,9 +1,4 @@
 #include "core/CRC32Strategy.h"
-#include <fstream>
-#include <vector>
-#include <sstream>
-#include <iomanip>
-#include <stdexcept>
 
 uint32_t CRC32Strategy::computeCRC32(const uint8_t* data, size_t length) const {
     uint32_t crc = 0xFFFFFFFF;

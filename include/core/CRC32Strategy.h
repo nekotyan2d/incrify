@@ -1,6 +1,11 @@
 #pragma once
 #include "IHashStrategy.h"
 #include <cstdint>
+#include <fstream>
+#include <vector>
+#include <sstream>
+#include <iomanip>
+#include <stdexcept>
 
 class CRC32Strategy : public IHashStrategy {
     public:

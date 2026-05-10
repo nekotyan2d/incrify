@@ -5,6 +5,8 @@
 #include "models/FileIndex.h"
 #include "models/FileChange.h"
 #include "IHashStrategy.h"
+#include <filesystem>
+#include <stdexcept>
 
 class FileIndexer {
     public:

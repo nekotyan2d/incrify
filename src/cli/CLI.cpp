@@ -1,8 +1,4 @@
 #include "cli/CLI.h"
-#include "cli/ICommand.h"
-#include "core/IProgressObserver.h"
-#include <iostream>
-#include <iomanip>
 
 class ConsoleProgressObserver : public IProgressObserver {
 public:
@@ -12,47 +8,47 @@ public:
 };
 
 class BackupFullCommand : public ICommand {
-    BackupManager& manager_;
-    std::string src_, dst_;
+    BackupManager& _manager;
+    std::string _src, _dst;
 public:
     BackupFullCommand(BackupManager& m, std::string src, std::string dst)
-        : manager_(m), src_(std::move(src)), dst_(std::move(dst)) {}
+        : _manager(m), _src(std::move(src)), _dst(std::move(dst)) {}
 
     void execute() override {
-        std::cout << "[backup full] " << src_ << " -> " << dst_ << "\n";
-        auto result = manager_.createFullBackup(src_, dst_);
+        std::cout << "[backup full] " << _src << " -> " << _dst << "\n";
+        auto result = _manager.createFullBackup(_src, _dst);
         std::cout << (result.success ? "[OK] " : "[ОШИБКА] ") << result.message << "\n";
     }
 };
 
 class BackupIncrementalCommand : public ICommand {
-    BackupManager& manager_;
-    std::string src_, dst_;
+    BackupManager& _manager;
+    std::string _src, _dst;
 public:
     BackupIncrementalCommand(BackupManager& m, std::string src, std::string dst)
-        : manager_(m), src_(std::move(src)), dst_(std::move(dst)) {}
+        : _manager(m), _src(std::move(src)), _dst(std::move(dst)) {}
 
     void execute() override {
-        std::cout << "[backup incremental] " << src_ << " -> " << dst_ << "\n";
-        auto result = manager_.createIncremental(src_, dst_);
+        std::cout << "[backup incremental] " << _src << " -> " << _dst << "\n";
+        auto result = _manager.createIncremental(_src, _dst);
         std::cout << (result.success ? "[OK] " : "[ОШИБКА] ") << result.message << "\n";
     }
 };
 
 class ListCommand : public ICommand {
-    BackupManager& manager_;
-    std::string backupDir_;
+    BackupManager& _manager;
+    std::string _backupDir;
 public:
     ListCommand(BackupManager& m, std::string dir)
-        : manager_(m), backupDir_(std::move(dir)) {}
+        : _manager(m), _backupDir(std::move(dir)) {}
 
     void execute() override {
-        auto snapshots = manager_.listSnapshots(backupDir_);
+        auto snapshots = _manager.listSnapshots(_backupDir);
         if (snapshots.empty()) {
-            std::cout << "Снапшотов не найдено в: " << backupDir_ << "\n";
+            std::cout << "Снапшотов не найдено в: " << _backupDir << "\n";
             return;
         }
-        std::cout << "Снапшоты в: " << backupDir_ << "\n";
+        std::cout << "Снапшоты в: " << _backupDir << "\n";
         std::cout << std::string(62, '-') << "\n";
         std::cout << std::left
                   << std::setw(20) << "ID"
@@ -71,28 +67,28 @@ public:
 };
 
 class RestoreCommand : public ICommand {
-    BackupManager& manager_;
-    std::string snapshotId_, backupDir_;
+    BackupManager& _manager;
+    std::string _snapshotId, _backupDir;
 public:
     RestoreCommand(BackupManager& m, std::string id, std::string dir)
-        : manager_(m), snapshotId_(std::move(id)), backupDir_(std::move(dir)) {}
+        : _manager(m), _snapshotId(std::move(id)), _backupDir(std::move(dir)) {}
 
     void execute() override {
-        std::cout << "[restore] " << snapshotId_ << "\n";
-        auto result = manager_.restore(snapshotId_, backupDir_);
+        std::cout << "[restore] " << _snapshotId << "\n";
+        auto result = _manager.restore(_snapshotId, _backupDir);
         std::cout << (result.success ? "[OK] " : "[ОШИБКА] ") << result.message << "\n";
     }
 };
 
 class DeleteCommand : public ICommand {
-    BackupManager& manager_;
-    std::string snapshotId_, backupDir_;
+    BackupManager& _manager;
+    std::string _snapshotId, _backupDir;
 public:
     DeleteCommand(BackupManager& m, std::string id, std::string dir)
-        : manager_(m), snapshotId_(std::move(id)), backupDir_(std::move(dir)) {}
+        : _manager(m), _snapshotId(std::move(id)), _backupDir(std::move(dir)) {}
 
     void execute() override {
-        auto result = manager_.deleteSnapshot(snapshotId_, backupDir_);
+        auto result = _manager.deleteSnapshot(_snapshotId, _backupDir);
         std::cout << (result.success ? "[OK] " : "[ОШИБКА] ") << result.message << "\n";
     }
 };

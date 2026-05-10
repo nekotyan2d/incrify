@@ -1,6 +1,4 @@
 #include "core/FileIndexer.h"
-#include <filesystem>
-#include <stdexcept>
 
 namespace fs = std::filesystem;
 
