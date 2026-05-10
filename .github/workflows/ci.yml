@@ -14,24 +14,15 @@ jobs:
                     - os: ubuntu-latest
                       compiler: gcc
                     - os: windows-latest
-                      compiler: mingw
-                      cmake_flags: >-
-                          -G "MinGW Makefiles"
+                      compiler: msvc
 
         steps:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Install CMake (Windows)
-              if: runner.os == 'Windows'
-              run: |
-                  choco install mingw --yes
-                  choco install cmake --yes --installargs 'ADD_CMAKE_TO_PATH=System'
-
             - name: Configure CMake
               run: >
                   cmake -S . -B build
-                  ${{ matrix.cmake_flags}}
                   -DBUILD_TESTS=ON
             - name: Build
               run: cmake --build build --config Debug

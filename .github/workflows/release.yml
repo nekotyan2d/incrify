@@ -20,22 +20,15 @@ jobs:
 
                     - os: windows-latest
                       artifact_name: incrify-windows-x64
-                      binary_path: build/incrify.exe
+                      binary_path: build/Release/incrify.exe
 
         steps:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Install CMake (Windows)
-              if: runner.os == 'Windows'
-              run: |
-                  choco install mingw --yes
-                  choco install cmake --yes --installargs 'ADD_CMAKE_TO_PATH=System'
-
             - name: Setup CMake (Release)
               run: >
                   cmake -S . -B build
-                  ${{ matrix.os == 'windows-latest' && '-G "MinGW Makefiles"' || '' }}
                   -DCMAKE_BUILD_TYPE=Release
                   -DBUILD_TESTS=ON
 
