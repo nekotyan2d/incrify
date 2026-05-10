@@ -17,8 +17,8 @@ void BackupManager::notify(const std::string& message) {
 std::string BackupManager::generateId() const {
     auto now  = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
-    auto ms   = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    now.time_since_epoch()) % 1000;
+    auto us   = std::chrono::duration_cast<std::chrono::microseconds>(
+                    now.time_since_epoch()) % 1000000;
     std::tm tm{};
 #ifdef _WIN32
     localtime_s(&tm, &time);
@@ -27,7 +27,7 @@ std::string BackupManager::generateId() const {
 #endif
     std::ostringstream oss;
     oss << std::put_time(&tm, "%Y%m%d_%H%M%S")
-        << "_" << std::setw(3) << std::setfill('0') << ms.count();
+        << "_" << std::setw(6) << std::setfill('0') << us.count();
     return oss.str();
 }
 

@@ -138,6 +138,7 @@ TEST_CASE("BackupManager::createIncremental", "[BackupManager]") {
         writeFile(tmp.src / "new.txt", "new content");
         manager.createIncremental(tmp.src.string(), tmp.backup.string());
         auto list = manager.listSnapshots(tmp.backup.string());
+        REQUIRE(list.size() == 2);
         REQUIRE(list[1].type == SnapshotType::INCREMENTAL);
     }
 
@@ -149,6 +150,7 @@ TEST_CASE("BackupManager::createIncremental", "[BackupManager]") {
         writeFile(tmp.src / "new.txt", "data");
         manager.createIncremental(tmp.src.string(), tmp.backup.string());
         auto list = manager.listSnapshots(tmp.backup.string());
+        REQUIRE(list.size() == 2);
         REQUIRE(list[1].parentId == list[0].id);
     }
 
@@ -168,6 +170,7 @@ TEST_CASE("BackupManager::createIncremental", "[BackupManager]") {
         writeFile(tmp.src / "new.txt", "new");
         manager.createIncremental(tmp.src.string(), tmp.backup.string());
         auto list = manager.listSnapshots(tmp.backup.string());
+        REQUIRE(list.size() == 2);
         bool found = false;
         for (const auto& c : list[1].changes)
             if (c.path.find("new.txt") != std::string::npos &&
@@ -218,6 +221,7 @@ TEST_CASE("BackupManager::restore", "[BackupManager]") {
         fs::remove_all(tmp.src);
         fs::create_directories(tmp.src);
         auto list = manager.listSnapshots(tmp.backup.string());
+        REQUIRE(list.size() == 2);
         manager.restore(list[1].id, tmp.backup.string());
 
         REQUIRE(fs::exists(tmp.src / "file.txt"));
