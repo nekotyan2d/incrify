@@ -1,31 +1,36 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: ["**"]
+    tags-ignore: ["v*.*.*"]
+  pull_request:
+    branches: ["**"]
 
 jobs:
-    build-and-test:
-        name: ${{ matrix.os }} / ${{ matrix.compiler }}
-        runs-on: ${{ matrix.os }}
+  build-and-test:
+    name: ${{ matrix.os }} / ${{ matrix.compiler }}
+    runs-on: ${{ matrix.os }}
 
-        strategy:
-            fail-fast: false
-            matrix:
-                include:
-                    - os: ubuntu-latest
-                      compiler: gcc
-                    - os: windows-latest
-                      compiler: msvc
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+          - os: windows-latest
+            compiler: msvc
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-            - name: Configure CMake
-              run: >
-                  cmake -S . -B build
-                  -DBUILD_TESTS=ON
-            - name: Build
-              run: cmake --build build --config Debug
+      - name: Configure CMake
+        run: >
+          cmake -S . -B build
+          -DBUILD_TESTS=ON
+      - name: Build
+        run: cmake --build build --config Debug
 
-            - name: Run Tests
-              run: ctest --test-dir build -C Debug --output-on-failure
+      - name: Run Tests
+        run: ctest --test-dir build -C Debug --output-on-failure
